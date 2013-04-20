@@ -19,7 +19,7 @@ M = N/2;
 L = 32;
 C = 2*M; %length of computed received samples for Mp
 
-SNR = 15;
+SNR = 12;
 FOFF = 0.5;
 toff = 129;
 tcor = toff+33+3*M;
@@ -88,7 +88,7 @@ toff_mat = zeros(toff,NLOP);
 rx_in = [toff_mat; rx_in];
 rx_in = reshape(rx_in,1,((CP+NFFT)*(PRE + NDS) + toff) * NLOP);
 rx_in = awgn(rx_in ,SNR,'measured');   
-rx_in = 0.5*(rx_in ./ max([max(real(rx_in)) max(imag(rx_in))]));
+rx_in = 0.9*(rx_in ./ max([max(real(rx_in)) max(imag(rx_in))]));
 %rx_in = rx_in .*2;
 
 known_pre = pre64;
@@ -156,7 +156,7 @@ elseif (FBIT == 15 ),
 end
 
 thres_coeff_rtl = typecast(int32(thres_coeff .* 2^15),'uint32');
-fid = fopen('RTL_Synch_thres_coeff_q05.txt', 'w');
+fid = fopen('../MY_SOURCES/RTL_Synch_thres_coeff_q05.txt', 'w');
 fprintf(fid, '%5x ', thres_coeff_rtl(1:16));
 fclose(fid);
 

@@ -267,8 +267,8 @@ for ii = 1:NLOP,
     %Ph_est = zeros(NFFT,NDS);
     k=(0:NFFT-1).';
     for n = 1:NDS,
-        Ph_est(:,n,ii) = (cosbi(n) - asinbi(n) * k) + 1i.*(sinbi(n) + acosbi(n)*k);
-        %Ph_est(:,n,ii) = (cosbi(n) - 0 * k) + 1i.*(sinbi(n) + 0*k);
+        %Ph_est(:,n,ii) = (cosbi(n) - asinbi(n) * k) + 1i.*(sinbi(n) + acosbi(n)*k);
+        Ph_est(:,n,ii) = (cosbi(n) - 0 * k) + 1i.*(sinbi(n) + 0*k);
     end
 
     Pilot_indices = [14 39 64 89 169 194 219 244];          

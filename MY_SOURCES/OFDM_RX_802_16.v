@@ -40,7 +40,7 @@ wire			Synch_CYC_O;
 wire			Synch_ACK_I;	 
 wire [31:0] FRE_O;
 wire			FRE_O_val;
-Synch #(.FBIT(6), .FBIT2(7)) Synch_ins(
+Synch #(.FBIT(7), .FBIT2(8)) Synch_ins(
 	.CLK_I(CLK_I), .RST_I(RST_I),
 	.DAT_I({Q_CH_I,I_CH_I}),
 	.STB_I(STB_I),

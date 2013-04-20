@@ -38,23 +38,23 @@ reg  [18:0]	ph_op1_Re, ph_op1_Im;		// Q6.13
 reg  [17:0]	ph_op2_Re, ph_op2_Im;		// Q5.13
 wire [18:0]	subsum1_Re, subsum1_Im;		// Q6.13
 wire [15:0] addsum2_Re, subsum2_Im;		// Q3.13
-reg  [13:0] acosbi, asinbi;				// Q1.13
+//reg  [13:0] acosbi, asinbi;				// Q1.13
 reg  [14:0] sinbi, cosbi;					// Q2.13
 
-reg  [15:0] ph_acc_Re, ph_acc_Im;		// Q3.13
+//reg  [15:0] ph_acc_Re, ph_acc_Im;		// Q3.13
 wire [15:0] ph_est_Re, ph_est_Im;		// Q3.13
 
 always@(posedge clk) begin
 	if (rst)				begin
-								acosbi 	<= 13'd0;
-								asinbi 	<= 13'd0;
+								//acosbi 	<= 13'd0;
+								//asinbi 	<= 13'd0;
 								sinbi 	<= 14'd0;
 								cosbi 	<= 14'd0;
 							end
 	else if(ph_est_p)begin
-								asinbi	<= {subsum1_Re[18], subsum1_Re[18], subsum1_Re[18:7]};		// subsum1_Re >> 7;  Q1.13
+								//asinbi	<= {subsum1_Re[18], subsum1_Re[18], subsum1_Re[18:7]};		// subsum1_Re >> 7;  Q1.13
 								cosbi		<= addsum2_Re[14:0];		// Q2.13				// subsum2_Re >> 3;  Q2.13
-								acosbi	<= {subsum1_Im[18], subsum1_Im[18], subsum1_Im[18:7]};		// subsum1_Im >> 7;  Q1.13
+								//acosbi	<= {subsum1_Im[18], subsum1_Im[18], subsum1_Im[18:7]};		// subsum1_Im >> 7;  Q1.13
 								sinbi		<= subsum2_Im[14:0];		// Q2.13				// subsum2_Im >> 3;  Q2.13
 							end	
 end
@@ -136,6 +136,7 @@ always@(posedge clk) begin
 				end
 end
 
+/*
 reg [7:0] acc_cnt;
 always@(posedge clk) begin
 	if (rst)	begin 
@@ -161,9 +162,11 @@ always@(posedge clk) begin
 					end
 				end
 end
-
-assign ph_est_Re 	= {cosbi[14],cosbi} - ph_acc_Re; //Q3.13;
-assign ph_est_Im 	= {sinbi[14],sinbi} + ph_acc_Im; //Q3.13;
+*/
+//assign ph_est_Re 	= {cosbi[14],cosbi} - ph_acc_Re; //Q3.13;
+//assign ph_est_Im 	= {sinbi[14],sinbi} + ph_acc_Im; //Q3.13;
+assign ph_est_Re 	= {cosbi[14],cosbi} ; //Q3.13;
+assign ph_est_Im 	= {sinbi[14],sinbi} ; //Q3.13;
 assign ph_Re		= ph_est_Re[15:0];		//Q3.13;
 assign ph_Im		= ph_est_Im[15:0];		//Q3.13;
 
