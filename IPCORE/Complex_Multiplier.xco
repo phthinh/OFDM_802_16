@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 13.2
-# Date: Tue May 28 06:30:41 2013
+# Date: Tue May 28 06:20:57 2013
 #
 ##############################################################
 #
@@ -12,7 +12,7 @@
 #
 ##############################################################
 #
-#  Generated from component: xilinx.com:ip:mult_gen:11.2
+#  Generated from component: xilinx.com:ip:cmpy:5.0
 #
 ##############################################################
 #
@@ -36,33 +36,34 @@ SET verilogsim = true
 SET vhdlsim = false
 # END Project Options
 # BEGIN Select
-SELECT Multiplier xilinx.com:ip:mult_gen:11.2
+SELECT Complex_Multiplier xilinx.com:ip:cmpy:5.0
 # END Select
 # BEGIN Parameters
-CSET ccmimp=Distributed_Memory
-CSET clockenable=true
-CSET component_name=mult
-CSET constvalue=129
-CSET internaluser=0
-CSET multiplier_construction=Use_Mults
-CSET multtype=Parallel_Multiplier
-CSET optgoal=Speed
-CSET outputwidthhigh=33
-CSET outputwidthlow=0
-CSET pipestages=3
-CSET portatype=Unsigned
-CSET portawidth=17
-CSET portbtype=Unsigned
-CSET portbwidth=17
-CSET roundpoint=0
-CSET sclrcepriority=SCLR_Overrides_CE
-CSET syncclear=true
-CSET use_custom_output_width=false
-CSET userounding=false
-CSET zerodetect=false
+CSET aclken=false
+CSET aportwidth=16
+CSET aresetn=true
+CSET atuserwidth=1
+CSET bportwidth=16
+CSET btuserwidth=1
+CSET component_name=Complex_Multiplier
+CSET ctrltuserwidth=1
+CSET flowcontrol=NonBlocking
+CSET hasatlast=false
+CSET hasatuser=false
+CSET hasbtlast=false
+CSET hasbtuser=false
+CSET hasctrltlast=false
+CSET hasctrltuser=false
+CSET latencyconfig=Automatic
+CSET minimumlatency=6
+CSET multtype=Use_Mults
+CSET optimizegoal=Resources
+CSET outputwidth=33
+CSET outtlastbehv=Null
+CSET roundmode=Truncate
 # END Parameters
 # BEGIN Extra information
-MISC pkg_timestamp=2011-06-21T06:26:54.000Z
+MISC pkg_timestamp=2011-06-21T06:39:44.000Z
 # END Extra information
 GENERATE
-# CRC: b6dfe1f5
+# CRC: 6b04a28f

@@ -54,8 +54,8 @@ begin
 		end
 	else if (~out_halt)	begin			
 		if(ena) begin
-			bits_dem[1] 	<= QPSK_Im[15];
-			bits_dem[0] 	<= QPSK_Re[15];
+			bits_dem[1] 	<= ~QPSK_Im[15];
+			bits_dem[0] 	<= ~QPSK_Re[15];
 			bits_dem_val	<= 1'b1;
 			end
 		else	bits_dem_val 		<= 1'b0;	

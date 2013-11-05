@@ -40,7 +40,8 @@ wire			Synch_CYC_O;
 wire			Synch_ACK_I;	 
 wire [31:0] FRE_O;
 wire			FRE_O_val;
-Synch #(.FBIT(7), .FBIT2(8)) Synch_ins(
+//Synch #(.FBIT(7), .FBIT2(8)) Synch_ins(
+Con_Synch  Synch_ins(
 	.CLK_I(CLK_I), .RST_I(RST_I),
 	.DAT_I({Q_CH_I,I_CH_I}),
 	.STB_I(STB_I),
@@ -51,11 +52,11 @@ Synch #(.FBIT(7), .FBIT2(8)) Synch_ins(
 	.WE_O (Synch_WE_O ), 
 	.STB_O(Synch_STB_O),
 	.CYC_O(Synch_CYC_O),
-	.ACK_I(Synch_ACK_I),
+	.ACK_I(Synch_ACK_I)
 
-	.SNR(SNR),				//Signal to Noise Ratio
-	.FRE_O(FRE_O),
-	.FRE_O_val(FRE_O_val)
+//	.SNR(SNR),				//Signal to Noise Ratio
+//	.FRE_O(FRE_O),
+//	.FRE_O_val(FRE_O_val)
     );
 
 wire [31:0] FreComp_DAT_O;
@@ -63,7 +64,8 @@ wire 			FreComp_WE_O;
 wire			FreComp_STB_O;
 wire			FreComp_CYC_O;
 wire			FreComp_ACK_I;	 
-FreComp FreComp_ins(
+//FreComp FreComp_ins(
+Interface_BB FreComp_ins(
 	.CLK_I(CLK_I), .RST_I(RST_I),
 	.DAT_I(Synch_DAT_O),
 	.WE_I (Synch_WE_O), 
@@ -75,10 +77,10 @@ FreComp FreComp_ins(
 	.WE_O (FreComp_WE_O ), 
 	.STB_O(FreComp_STB_O),
 	.CYC_O(FreComp_CYC_O),
-	.ACK_I(FreComp_ACK_I),
+	.ACK_I(FreComp_ACK_I)
 
-	.FRE_I(FRE_O),
-	.FRE_I_nd(FRE_O_val)
+//	.FRE_I(FRE_O),
+//	.FRE_I_nd(FRE_O_val)
     );
 
 wire [31:0] RemoveCP_DAT_O;
@@ -128,7 +130,8 @@ wire 			iCFO_EstComp_WE_O;
 wire			iCFO_EstComp_STB_O;
 wire			iCFO_EstComp_CYC_O;
 wire			iCFO_EstComp_ACK_I;	 
-iCFO_EstComp 		iCFO_EstComp_ins(
+//iCFO_EstComp 		iCFO_EstComp_ins(
+Interface_BB		iCFO_EstComp_ins(
 	.CLK_I(CLK_I), .RST_I(RST_I),
 	.DAT_I(FFT_Demod_DAT_O),
 	.WE_I (FFT_Demod_WE_O), 
@@ -180,7 +183,9 @@ PhaseTrack 		PhaseTrack_ins(
 	.WE_O (PhaseTrack_WE_O ), 
 	.STB_O(PhaseTrack_STB_O),
 	.CYC_O(PhaseTrack_CYC_O),
-	.ACK_I(PhaseTrack_ACK_I)
+	.ACK_I(PhaseTrack_ACK_I),
+	.ALLOC_VEC({{12{2'b11}}, 2'b01, {24{2'b11}}, 2'b10, {24{2'b11}}, 2'b01, {24{2'b11}}, 2'b10, {12{2'b11}}, {12{2'b11}}, 2'b10, {24{2'b11}}, 2'b10, {24{2'b11}}, 2'b01, {24{2'b11}}, 2'b01, {12{2'b11}}})
+	
     );
 
 wire [7:0] DataSymDem_DAT_O;

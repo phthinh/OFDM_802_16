@@ -24,27 +24,27 @@ module Ch_EstEqu(
 	input 			WE_I, STB_I, CYC_I,
 	output			ACK_O,
 	
-	output reg [31:0]	DAT_O,					// DAT_O_Im[31:16] DAT_O_Re[15:0] in format 3.13 (Q7.9)
+	output reg [31:0]	DAT_O,					// DAT_O_Im[31:16] DAT_O_Re[15:0] in format 3.13 (Q10.6)
 	output reg		CYC_O,STB_O,
 	output 			WE_O, 
 	input				ACK_I	
     );
 
-parameter LP_P = 16'h5A82;	// +1/aqrt(2) in Q1.15
-parameter LP_N = 16'hA57E;	// -1/aqrt(2) in Q1.15 
+parameter LP_P = 16'h5A82;	// sqrt(2) in Q2.14
+parameter LP_N = 16'hA57E;	// sqrt(2) in Q2.14 
 reg [1:0] lp 	 [0:99]; //[1] :signed bit of imaginary part, [0] :signed bit of real part of long preamble,
-initial $readmemh("./MY_SOURCES/Synch_known_lpre.txt", lp);
-reg [7:0] reorder [0:199]; //[1] :signed bit of imaginary part, [0] :signed bit of real part of long preamble,
-initial $readmemh("./MY_SOURCES/reorder_map.txt", reorder);
 
+//parameter LP_P = 16'h7fff;	// +1 in Q1.15
+//parameter LP_N = 16'h8001;	// -1 in Q1.15 
+//reg [1:0] lp 	 [0:51]; //[1] :signed bit of imaginary part, [0] :signed bit of real part of long preamble,
+initial $readmemh("./MY_SOURCES/ChEstEqu_lpre.txt", lp);
 reg [31:0]  idat;
 reg 			iena;
 wire 			istart, out_halt, datin_val;
-wire			buf_full;
 
 assign 		datin_val = (WE_I) & STB_I & CYC_I;
 assign 		out_halt  =  STB_O  & (~ACK_I);
-assign 		ACK_O     =  datin_val & (~buf_full);
+assign 		ACK_O     =  datin_val & (~out_halt);
 assign		istart	 =  CYC_I  & (~CYC_I_pp);
 
 reg 	CYC_I_pp;
@@ -63,23 +63,18 @@ always @(posedge CLK_I) begin
 end
 
 
-wire [31:0] buf_dat;
-wire [7:0]	datin_cnt;
-wire 			buf_almostfull;
-
-reg [7:0]	rx_buf_rdcnt;	//read pointer of rx buffer
-reg 			pop_ena;
-reg 			half_buf_rd;
-wire [7:0]  reorder_rdcnt;
-
 wire [31:0] lg_pre;
+//wire [5:0]  pre_rdcnt;
 wire [6:0]  pre_rdcnt;
 
-
+//reg  [31:0] ch_cof_mem [0:51];
 reg  [31:0] ch_cof_mem [0:99];
 wire [31:0] ch_cof;
+//wire [5:0]  ch_cof_rdcnt;
 wire [6:0]  ch_cof_rdcnt;
+//reg  [5:0]	ch_cof_wrcnt;
 reg  [6:0]	ch_cof_wrcnt;
+
 
 wire 			ch_est;
 reg			ch_equ;
@@ -94,73 +89,94 @@ wire 			Ch_CmxMul_oval;
 wire [15:0] mult_Re;
 wire [15:0] mult_Im;
 
-Ch_buf Ch_buf_ins(
-	.clk(CLK_I), .rst(RST_I), .ena(iena), .start(istart),
-	.datin(idat),
-	.rd_addr(reorder_rdcnt),		 
-	.datout(buf_dat),
-	.dat_cnt(datin_cnt),
-	.almostfull(buf_almostfull),
-	.full(buf_full)
-    );
 
-assign  reorder_rdcnt = (ch_equ)? reorder[rx_buf_rdcnt] : rx_buf_rdcnt;			// read the pilot first then data carrier
+//reg [5:0] 	dat_cnt;
+reg [7:0] 	dat_cnt;
 always@(posedge CLK_I) begin
-	if (RST_I) 									pop_ena	<= 1'b0;
-	else if (buf_almostfull)				pop_ena	<= 1'b1;								
-	else if ((rx_buf_rdcnt  == 8'd199))	pop_ena	<= 1'b0;								
-end
-always@(posedge CLK_I) begin
-	if (RST_I) 									rx_buf_rdcnt	<= 8'd0;
-	else if (rx_buf_rdcnt  == 8'd199)	rx_buf_rdcnt	<= 8'd0;
-	else if (pop_ena & (~out_halt))		rx_buf_rdcnt	<= rx_buf_rdcnt + 1'b1;	
-end
-always@(posedge CLK_I) begin
-	if (RST_I) 									half_buf_rd	<= 1'b0;
-	else if (rx_buf_rdcnt == 8'd99)		half_buf_rd	<= 1'b1;
-	else if (rx_buf_rdcnt == 8'd199)		half_buf_rd	<= 1'b0;								
+	if (RST_I)	 		dat_cnt <=8'd0;
+	else if (iena) 	dat_cnt <= dat_cnt + 1'b1;
+	else if (istart)	dat_cnt <=8'd0;
 end
 
-assign 	ch_est 			= pop_ena & (~ch_equ);
-assign 	ch_EstEqu_ena 	= ch_est | ch_equ;
+reg car_val; // used carriers in OFDM symbol
 always@(posedge CLK_I) begin
-	if (RST_I)	 												ch_equ <= 1'b0;
-	else if (pop_ena & (rx_buf_rdcnt  == 8'd199)) 	ch_equ <=(CYC_I)? 1'b1: 1'b0;		
+	if (RST_I)	 							car_val <= 1'b0;
+	else if 		(istart)					car_val <= 1'b0;
+	else if 		(iena) begin
+//		if			(dat_cnt == 6'd0)		car_val <= 1'd1;
+//		else if	(dat_cnt == 6'd26)	car_val <= 1'd0;
+//		else if	(dat_cnt == 6'd37)	car_val <= 1'd1;
+//		else if	(dat_cnt == 6'd63) 	car_val <= 1'd0;
+		if			(dat_cnt == 8'd0)		car_val <= 1'd1;
+		else if	(dat_cnt == 8'd100)	car_val <= 1'd0;
+		else if	(dat_cnt == 8'd155)	car_val <= 1'd1;
+		else if	(dat_cnt == 8'd255) 	car_val <= 1'd0;
+	end	
 end
 
-assign  	pre_rdcnt 		= (ch_est)? rx_buf_rdcnt[7:1] :7'd0;
+assign 	ch_est 			= iena & (~ch_equ);
+assign 	ch_EstEqu_ena 	= iena;
+always@(posedge CLK_I) begin
+	if (RST_I)	 									ch_equ <= 1'b0;
+	else if (istart)								ch_equ <= 1'b0;
+//	else if (iena & (dat_cnt  == 6'd63)) 	ch_equ <= 1'b1;		
+	else if (iena & (dat_cnt  == 8'd255)) 	ch_equ <= 1'b1;	
+	else if (~CYC_I) 								ch_equ <= 1'b0;
+end
+
+//reg [5:0] car_cnt;
+reg [7:0] car_cnt;
+always@(posedge CLK_I) begin
+	if (RST_I)	 									car_cnt <= 8'd0;
+	else if (istart)								car_cnt <= 8'd0;
+//	else if (iena & (car_cnt == 6'd51))		car_cnt <= 6'd0;
+	else if (iena & (car_cnt == 8'd199))	car_cnt <= 8'd0;
+	else if (iena & car_val) 					car_cnt <= car_cnt + 1'b1;
+	
+end
+
+//assign  	pre_rdcnt 		= (ch_est)? car_cnt  : 6'd0;
+assign  	pre_rdcnt 		= (ch_est)? car_cnt[7:1]: 7'd0;
+//assign 	lg_pre[31:16]	=  16'd0;
 assign 	lg_pre[31:16]	= (lp[pre_rdcnt][1])? LP_N: LP_P;
 assign 	lg_pre[15:0] 	= (lp[pre_rdcnt][0])? LP_N: LP_P;
 
 assign 	ch_cof 			=  ch_cof_mem[ch_cof_rdcnt];			
-assign  	ch_cof_rdcnt 	= (ch_equ)? reorder_rdcnt[7:1]:7'd0;
+//assign  	ch_cof_rdcnt 	= (ch_equ)? car_cnt:6'd0;
+assign  	ch_cof_rdcnt 	= (ch_equ)? car_cnt[7:1]: 7'd0;
+
 always@(posedge CLK_I) begin
 	if (RST_I) 									ch_cof_wrcnt <= 7'd0;	
 	else if (istart) 							ch_cof_wrcnt <= 7'd0;
+//	else if (Ch_CmxMul_oval & (~(ch_cof_wrcnt == 6'd52))) begin
+//													ch_cof_mem[ch_cof_wrcnt]	<= {mult_Im, mult_Re};
+//													ch_cof_wrcnt <= ch_cof_wrcnt + 1'b1;
+//													end
 	else if (Ch_CmxMul_oval & (~(ch_cof_wrcnt == 7'd100))) begin
-													ch_cof_mem[ch_cof_wrcnt]	<= {mult_Im, mult_Re};
+													ch_cof_mem[ch_cof_wrcnt]	<= {mult_Im, mult_Re};		// Q6.10
 													ch_cof_wrcnt <= ch_cof_wrcnt + 1'b1;
-													end
+													end												
 end
 
-assign	mult_Re = Ch_CmxMul_dout[31:16];		//divide by 4
-assign	mult_Im = Ch_CmxMul_dout[71:56];		//divide by 4
+assign	mult_Re = Ch_CmxMul_dout[30:15];		// Q6.10 - Q10.6
+assign	mult_Im = Ch_CmxMul_dout[70:55];		// Q6.10 - Q10.6
 
-assign	Ch_CmxMul_A[15:0]  = buf_dat[15:0];
-assign	Ch_CmxMul_A[31:16] = (ch_est)? (~buf_dat[31:16] + 1'b1)			: buf_dat[31:16];
-assign   Ch_CmxMul_B 		 = (ch_est)? lg_pre									: ch_cof;
-assign	Ch_CmxMul_ival 	 = (ch_est) ? (half_buf_rd^rx_buf_rdcnt[0]) 	: (ch_equ)? pop_ena : 1'b0;
+assign	Ch_CmxMul_A[15:0]  = idat[15:0];
+assign	Ch_CmxMul_A[31:16] = (ch_est)? (~idat[31:16] + 1'b1)			: idat[31:16];
+assign   Ch_CmxMul_B 		 = (ch_est)? lg_pre								: ch_cof;
+//assign	Ch_CmxMul_ival 	 = car_val;
+assign	Ch_CmxMul_ival 	 = (ch_est)? (car_val & (~dat_cnt[0])) : car_val;
 
 Ch_CmxMul Ch_CmxMul_ins(
-	.aclk(CLK_I), // input aclk	
-	.aresetn(~RST_I), // input aresetn
-	.aclken(~out_halt), // input aclken
-	.s_axis_a_tvalid(Ch_CmxMul_ival), // input s_axis_a_tvalid
-	.s_axis_a_tdata(Ch_CmxMul_A), // input [31 : 0] s_axis_a_tdata
-	.s_axis_b_tvalid(Ch_CmxMul_ival), // input s_axis_b_tvalid
-	.s_axis_b_tdata(Ch_CmxMul_B), // input [31 : 0] s_axis_b_tdata
-	.m_axis_dout_tvalid(Ch_CmxMul_oval), // ouput m_axis_dout_tvalid
-	.m_axis_dout_tdata(Ch_CmxMul_dout)); // ouput [79 : 0] m_axis_dout_tdata 
+	.aclk(CLK_I), 										// input aclk	
+	.aresetn(~RST_I), 							// input aresetn
+	.aclken(~out_halt), 							// input aclken
+	.s_axis_a_tvalid(Ch_CmxMul_ival), 		// input s_axis_a_tvalid
+	.s_axis_a_tdata(Ch_CmxMul_A),				// input [31 : 0] s_axis_a_tdata
+	.s_axis_b_tvalid(Ch_CmxMul_ival), 		// input s_axis_b_tvalid
+	.s_axis_b_tdata(Ch_CmxMul_B), 			// input [31 : 0] s_axis_b_tdata
+	.m_axis_dout_tvalid(Ch_CmxMul_oval), 	// ouput m_axis_dout_tvalid
+	.m_axis_dout_tdata(Ch_CmxMul_dout)); 	// ouput [79 : 0] m_axis_dout_tdata 
 
 
 reg [5:0] ch_equ_delay; // because of multiplier latency.
@@ -179,15 +195,14 @@ assign WE_O = CYC_O;
 
 always @(posedge CLK_I) begin
 	if(RST_I) 	begin
-		DAT_O <= 32'd0;
+		DAT_O <= 32'd0; 
 		STB_O <= 1'b0;
 		end
 	else if(ch_equ_oval & Ch_CmxMul_oval) 	begin	
 		STB_O <= 1'b1;
-		if ((~out_halt))	DAT_O <= {mult_Im, mult_Re};			// Q3.13 (Q7.9)
+		if ((~out_halt))	DAT_O <= {mult_Im, mult_Re};			// Q3.13 (Q10.6)
 		end		
 	else STB_O <= 1'b0;
 end
-
 
 endmodule
