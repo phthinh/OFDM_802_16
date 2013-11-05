@@ -131,10 +131,10 @@ fclose(datin_fid);
 known_coeff = [known_coeff; known_coeff]./2;
 known_coeff = repmat(known_coeff,1,NLOP);
 
-datin_fid = fopen('Synch_thres_coeff_q05.txt', 'r');
-thr_coeff = fscanf(datin_fid, '%f ');
-thr_coeff = repmat(thr_coeff, 1, NLOP);
-fclose(datin_fid);
+% datin_fid = fopen('Synch_thres_coeff_q05.txt', 'r');
+% thr_coeff = fscanf(datin_fid, '%f ');
+% thr_coeff = repmat(thr_coeff, 1, NLOP);
+% fclose(datin_fid);
 
 [DL_preamble, UL_preamble, pre64, pre128, peven] = preamble_802_16();
 
@@ -164,7 +164,8 @@ for d = 1: Flen,
     end
     Fir_reg(128,:) = abs(rx_in(d,:)).^2 .* known_coeff(1,:);
     R_sim(d,:) = Fir_reg(1,:);
-    R_thr_sim(d,:) = R_sim(d,:).* thr_coeff(SNR+1,:);
+    %R_thr_sim(d,:) = R_sim(d,:).* thr_coeff(SNR+1,:);
+    R_thr_sim(d,:) = R_sim(d,:).* 0.5;
 end
 
 % Timing synchronisation toff_est = t_cor =================================
