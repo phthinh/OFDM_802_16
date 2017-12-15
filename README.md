@@ -12,6 +12,7 @@ Each part includes implementation files stored in **MY_SOURCES** and **IPCORE**,
 #### Publications
 
 This implementation is presented in the papers below:
+
 [1] T. H. Pham, S. A. Fahmy and I. V. McLoughlin, "Low-Power Correlation for IEEE 802.16 OFDM Synchronization on FPGA," in IEEE Transactions on Very Large Scale Integration (VLSI) Systems, vol. 21, no. 8, pp. 1549-1553, Aug. 2013. 
 [doi: 10.1109/TVLSI.2012.2210917](https://www.researchgate.net/publication/260655626)	
 
