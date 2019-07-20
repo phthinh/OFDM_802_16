@@ -50,7 +50,7 @@ FFT_ipcore FFT_ins (
 	.s_axis_data_tready(s_dat_rdy), // ouput s_axis_data_tready
 	.s_axis_data_tlast(1'b0), // input s_axis_data_tlast
 	.m_axis_data_tdata(fft_datout), // ouput [31 : 0] m_axis_data_tdata		in format 5.11
-	.m_axis_data_tuser(m_index[7:0]), // ouput [7 : 0] m_axis_data_tuser
+//	.m_axis_data_tuser(m_index[7:0]), // ouput [7 : 0] m_axis_data_tuser
 	.m_axis_data_tvalid(m_dat_val), // ouput m_axis_data_tvalid
 	.m_axis_data_tready(m_dat_rdy), // input m_axis_data_tready
 	.m_axis_data_tlast(m_dat_tlast), // ouput m_axis_data_tlast

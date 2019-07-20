@@ -38,12 +38,12 @@ reg [31:0]  idat;
 reg 			iena;
 wire 			istart, out_halt, datin_val;
 
+reg 	CYC_I_pp;
 assign 		datin_val = (WE_I) & STB_I & CYC_I;
 assign 		out_halt  =  STB_O  & (~ACK_I);
 assign 		ACK_O     =  datin_val &(~out_halt);
 assign		istart	 =  CYC_I  & (~CYC_I_pp);
 
-reg 	CYC_I_pp;
 always @(posedge CLK_I) begin
 	if(RST_I)	CYC_I_pp <= 1'b1;
 	else  		CYC_I_pp <= CYC_I;

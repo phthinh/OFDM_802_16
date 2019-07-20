@@ -32,7 +32,7 @@ module Tx_Out(
     );
 	 
 reg [31:0] Pre[0:575]; 
-initial $readmemh("./MY_SOURCES/Pre.txt", Pre); 
+initial $readmemh("Pre.txt", Pre); 
 
 reg [31:0]	idat;
 reg			ival;	

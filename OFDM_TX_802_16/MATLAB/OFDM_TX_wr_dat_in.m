@@ -1,6 +1,6 @@
 clear all
 close all
-
+mkdir('../','work/data');
 %dur  = 3.2e-6;  
 NLOP = 2;    % number of loop
 NFFT = 256;      % Number of FFT points
@@ -22,17 +22,17 @@ end
 
 Len = NC * NDS;
 %write data to file =======================================================
-fid = fopen('OFDM_TX_bit_symbols_Len.txt', 'w');
+fid = fopen('../work/data/OFDM_TX_bit_symbols_Len.txt', 'w');
 fprintf(fid, '%d ', Len);
 fprintf(fid, '%d ', NLOP);
 fprintf(fid, '%d ', MOD);
 fclose(fid);
 
-fid = fopen('OFDM_TX_bit_symbols.txt', 'w');
+fid = fopen('../work/data/OFDM_TX_bit_symbols.txt', 'w');
 fprintf(fid, '%d ', bit_symbols);
 fclose(fid);
 
-fid = fopen('RTL_OFDM_TX_bit_symbols.txt', 'w');
+fid = fopen('../work/data/RTL_OFDM_TX_bit_symbols.txt', 'w');
 fprintf(fid, '%x ', bit_symbols);
 fclose(fid);
 %write Preamble ===========================================================

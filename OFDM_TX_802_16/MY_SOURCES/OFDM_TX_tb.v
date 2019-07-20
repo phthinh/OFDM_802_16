@@ -77,14 +77,14 @@ initial 	begin
 		ii 		= 0;
 		dat_in	= 6'd0;
 		
-		para_fin = $fopen("./MATLAB/OFDM_TX_bit_symbols_Len.txt","r");
+		para_fin = $fopen("../../../../../data/OFDM_TX_bit_symbols_Len.txt","r");
 		$fscanf(para_fin, "%d ", Len);
 		$fscanf(para_fin, "%d ", NLOP);
 		$fclose(para_fin);
 
-		$readmemh("./MATLAB/RTL_OFDM_TX_bit_symbols.txt", datin);
+		$readmemh("../../../../../data/RTL_OFDM_TX_bit_symbols.txt", datin);
 	
-	#25rst		= 1'b0;
+	#65rst		= 1'b0;
 end
 
 always #10 	clk 		= ~clk;
@@ -201,14 +201,14 @@ integer Pilots_Insert_Re_fo, Pilots_Insert_Im_fo;
 integer IFFT_Mod_Re_fo, IFFT_Mod_Im_fo;
 initial begin
 	datout_cnt = 0;	
-	datout_Re_fo = $fopen("./MATLAB/RTL_OFDM_TX_datout_Re.txt");		
-	datout_Im_fo = $fopen("./MATLAB/RTL_OFDM_TX_datout_Im.txt");
+	datout_Re_fo = $fopen("../../../../../data/RTL_OFDM_TX_datout_Re.txt");		
+	datout_Im_fo = $fopen("../../../../../data/RTL_OFDM_TX_datout_Im.txt");
 	
-	Pilots_Insert_Re_fo = $fopen("./MATLAB/RTL_OFDM_TX_Pilots_Insert_Re.txt");		
-	Pilots_Insert_Im_fo = $fopen("./MATLAB/RTL_OFDM_TX_Pilots_Insert_Im.txt");
+	Pilots_Insert_Re_fo = $fopen("../../../../../data/RTL_OFDM_TX_Pilots_Insert_Re.txt");		
+	Pilots_Insert_Im_fo = $fopen("../../../../../data/RTL_OFDM_TX_Pilots_Insert_Im.txt");
 	
-	IFFT_Mod_Re_fo = $fopen("./MATLAB/RTL_OFDM_TX_IFFT_Mod_Re.txt");		
-	IFFT_Mod_Im_fo = $fopen("./MATLAB/RTL_OFDM_TX_IFFT_Mod_Im.txt");
+	IFFT_Mod_Re_fo = $fopen("../../../../../data/RTL_OFDM_TX_IFFT_Mod_Re.txt");		
+	IFFT_Mod_Im_fo = $fopen("../../../../../data/RTL_OFDM_TX_IFFT_Mod_Im.txt");
 	
 	forever begin
 		@(posedge clk);

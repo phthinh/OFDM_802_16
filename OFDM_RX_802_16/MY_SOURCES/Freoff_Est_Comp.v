@@ -36,7 +36,7 @@ begin
 end
 
 wire  phase_trans_rdy, phase_trans_rfd;
-wire	[15:0] phase_trans_out;
+wire	[31:0] phase_trans_out;
 wire	Metric_nd = ena & (~ena_pp);
 
 wire [15:0] phase_rot;
@@ -73,14 +73,14 @@ begin
 end
 
 FreComp_PhaseTrans Phase_Trans_ins (
-  .x_in(P_Re_avg[18:3]), 	// input [15 : 0] x_in
-  .y_in(P_Im_avg[18:3]), 	// input [15 : 0] y_in
-  .nd(phase_trans_nd), 	// input nd
-  .phase_out(phase_trans_out),// output [15 : 0] phase_out in format 3.13
-  .rdy(phase_trans_rdy),	// output rdy
-  .rfd(phase_trans_rfd), 	// output rfd
-  .clk(clk), 			// input clk 
-  .sclr(rst) 			// input sclr
+  .s_axis_cartesian_tdata({P_Im_avg[18:3], P_Re_avg[18:3]}),
+  .s_axis_cartesian_tvalid(phase_trans_nd), 	// input nd
+  .s_axis_cartesian_tready(phase_trans_rfd), 	// output rfd
+  .m_axis_dout_tdata(phase_trans_out),// output [31 : 16] phase_out in format 3.13; [15:0] real_out is not used
+  .m_axis_dout_tvalid(phase_trans_rdy),	// output rdy
+
+  .aclk(clk), 			// input clk 
+  .aresetn(~rst) 			// input sclr
 );
 
 wire phase_acc_ld = phase_trans_rdy;
@@ -99,7 +99,7 @@ Phase_Acc Phase_Acc_ins(
 	 .ld(phase_acc_ld),
     .acc(phase_acc_run & stb_in),		//input Accumulate phase
 	 .ce(ce),
-	 .phase_in(phase_trans_out),	//input [15:0] phase input
+	 .phase_in(phase_trans_out[31:16]),	//input [15:0] phase input
     .phase_out(phase_rot),			//output[15:0] phase output
     .phase_out_rdy(phase_acc_rdy)	//output	phase out ready		
     );
@@ -109,16 +109,16 @@ assign phase_rot_nd = phase_acc_rdy & stb_in;
 wire [15:0] phase_rot_x_in = {dat_in[15], dat_in[15:1]};     //in format 2.14
 wire [15:0] phase_rot_y_in = {dat_in[31], dat_in[31:17]} ;		//in format 2.14
 FreComp_PhaseRot Phase_Rot_ins (
-  .x_in(phase_rot_x_in), 		// input [15 : 0] x_in	//in format 2.14
-  .y_in(phase_rot_y_in), 		// input [15 : 0] y_in	//in format 2.14
-  .phase_in(phase_rot),			// input [15 : 0] phase_in in format 3.13
-  .nd(phase_rot_nd), 			// input nd
-  .x_out(phase_rot_xout),		// output [15 : 0] x_out	//in format 2.14
-  .y_out(phase_rot_yout), 		// output [15 : 0] y_out	//in format 2.14
-  .rdy(phase_rot_rdy),			// output rdy
-  .ce(ce),						// input ce
-  .clk(clk), 					// input clk  
-  .sclr(rst) 					// input sclr
+  .s_axis_cartesian_tdata({phase_rot_y_in, phase_rot_x_in}), //input [15 : 0] y_in, x_in	//in format 2.14
+  .s_axis_cartesian_tvalid(phase_rot_nd),
+  .s_axis_phase_tdata(phase_rot),			// input [15 : 0] phase_in in format 3.13
+  .s_axis_phase_tvalid(phase_rot_nd), 			// input nd
+  .m_axis_dout_tdata({phase_rot_yout, phase_rot_xout}), // output [15 : 0] yout, xout	//in format 2.14
+  .m_axis_dout_tvalid(phase_rot_rdy),			// output rdy
+  
+  .aclken(ce),					// input ce
+  .aclk(clk), 					// input clk  
+  .aresetn(~rst) 				// input sclr
 );
 
 always @(posedge clk)

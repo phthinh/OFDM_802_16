@@ -32,7 +32,7 @@ module Pilots_Insert(
 parameter P_P = 16'h7FFF;	// +1 in Q1.15
 parameter P_N = 16'h8001;	// -1 in Q1.15 
 reg 		 Pil 	 [0:127];   // signed bit of real part of pilots,
-initial $readmemh("./MY_SOURCES/Pilot_seq.txt", Pil);
+initial $readmemh("Pilot_seq.txt", Pil);
 	 
 reg [31:0]	idat;
 reg [31:0]  odat;

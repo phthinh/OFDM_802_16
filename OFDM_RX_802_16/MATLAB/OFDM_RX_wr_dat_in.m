@@ -1,5 +1,6 @@
 clear all
 close all
+mkdir('../','work/data');
 
 %dur  = 3.2e-6;  
 NLOP = 2;    % number of loop
@@ -19,7 +20,7 @@ M = N/2;
 L = 32;
 C = 2*M; %length of computed received samples for Mp
 
-SNR =  35;
+SNR =  40;
 FOFF = 0;
 toff = 8;
 tcor = toff+33+3*M;
@@ -96,20 +97,20 @@ abs_pre = abs(pre64).^2;
 known_coeff = round((abs_pre./max(abs_pre)).*2)./2;
 
 known_coeff_rtl = typecast(int8(real(known_coeff(1:64).*2)),'uint8');
-fid = fopen('Synch_known_coeff_rtl.txt', 'w');
+fid = fopen('../work/data/Synch_known_coeff_rtl.txt', 'w');
 fprintf(fid, '%x ', known_coeff_rtl);
 fclose(fid);
 
 %write data to file =======================================================
-fid = fopen('OFDM_RX_bit_symbols.txt', 'w');
+fid = fopen('../work/data/OFDM_RX_bit_symbols.txt', 'w');
 fprintf(fid, '%d ', bit_symbols_stream);
 fclose(fid);
 
 Len = length(rx_in);
-fid = fopen('OFDM_RX_datin_Re.txt', 'w');
+fid = fopen('../work/data/OFDM_RX_datin_Re.txt', 'w');
 fprintf(fid, '%f ', real(rx_in));
 fclose(fid);
-fid = fopen('OFDM_RX_datin_Im.txt', 'w');
+fid = fopen('../work/data/OFDM_RX_datin_Im.txt', 'w');
 fprintf(fid, '%f ', imag(rx_in));
 fclose(fid);
 
@@ -120,16 +121,15 @@ datin_Im = typecast(int16(imag(datin_rtl)),'uint16');
 SNR_w = round(SNR);
 if (SNR >15), SNR_w = 15; end
 Flen = 288 *(PRE+NDS) + toff;
-fid = fopen('RTL_OFDM_RX_datin_len.txt', 'w');
+fid = fopen('../work/data/RTL_OFDM_RX_datin_len.txt', 'w');
 fprintf(fid, '%d %d %d %d', NLOP, Flen, SNR_w, toff);
 fclose(fid);
-fid = fopen('RTL_OFDM_RX_datin_Re.txt', 'w');
+fid = fopen('../work/data/RTL_OFDM_RX_datin_Re.txt', 'w');
 fprintf(fid, '%4x ', datin_Re);
 fclose(fid);
-fid = fopen('RTL_OFDM_RX_datin_Im.txt', 'w');
+fid = fopen('../work/data/RTL_OFDM_RX_datin_Im.txt', 'w');
 fprintf(fid, '%4x ', datin_Im);
 fclose(fid);
-
 
 
 % data cofficient for system synthesis ==================================== 

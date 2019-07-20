@@ -57,7 +57,7 @@ OFDM_RX_802_16 UUT(
 	 
 	 
 
-parameter    NSAM  = 30*(256+32);
+parameter    NSAM  = 12*(256+32);
 reg [15:0] 	 datin_Re [NSAM - 1:0];
 reg [15:0] 	 datin_Im [NSAM - 1:0];
 integer 	lop_cnt, ii;
@@ -71,7 +71,7 @@ initial 	begin
 		
 		dat_in	= 32'd0;
 		
-		para_fin = $fopen("./MATLAB/RTL_OFDM_RX_datin_len.txt","r"); 
+		para_fin = $fopen("../../../../../data/RTL_OFDM_RX_datin_len.txt","r"); 
 		$fscanf(para_fin, "%d ", NLOP);
 		$fscanf(para_fin, "%d ", Flen);
 		$fscanf(para_fin, "%d ", SNR);
@@ -79,13 +79,14 @@ initial 	begin
 		$fclose(para_fin);
 		
 				
-		$readmemh("./MATLAB/RTL_OFDM_RX_datin_Re.txt", datin_Re);
-		$readmemh("./MATLAB/RTL_OFDM_RX_datin_Im.txt", datin_Im);
-	#25rst		= 1'b0;
+		$readmemh("../../../../../data/RTL_OFDM_RX_datin_Re.txt", datin_Re);
+		$readmemh("../../../../../data/RTL_OFDM_RX_datin_Im.txt", datin_Im);
+		
+		#65 rst		= 1'b0;
 end
 
 always #10 	clk 		= ~clk;
-
+reg         wr_datin;
 reg 		wr_frm; 
 initial 	begin	
 			wr_frm = 1'b0; 
@@ -114,7 +115,7 @@ begin
 	else if(~cyc_i)		datfrm_cnt  <= 0;
 end
 
-reg wr_datin, wr_frm_pp;	
+reg wr_frm_pp;	
 	
 always @(posedge clk) begin	
 	if(rst) 	begin
@@ -162,7 +163,7 @@ integer datout_fo, datout_cnt;
 
 initial begin
 	datout_cnt = 0;
-	datout_fo = $fopen("./MATLAB/RTL_OFDM_RX_datout.txt");
+	datout_fo = $fopen("../../../../../data/RTL_OFDM_RX_datout.txt");
 	forever begin
 		@(posedge clk);
 		if ((stb_o)&&(cyc_o)&&(ack_i)) begin
@@ -200,10 +201,10 @@ wire 			FFT_we_o		= UUT.FFT_Demod_ins.WE_O;
 wire 			FFT_ack_o	= UUT.FFT_Demod_ins.ACK_O;
 
 // iCFO_EstComp ===============================================================================
-wire [31:0] iCFO_EstComp_datout 	= UUT.iCFO_EstComp_ins.DAT_O;
-wire 			iCFO_EstComp_stb_o	= UUT.iCFO_EstComp_ins.STB_O;
-wire 			iCFO_EstComp_we_o		= UUT.iCFO_EstComp_ins.WE_O;
-wire 			iCFO_EstComp_ack_o	= UUT.iCFO_EstComp_ins.ACK_O;
+//wire [31:0] iCFO_EstComp_datout 	= UUT.iCFO_EstComp_ins.DAT_O;
+//wire 			iCFO_EstComp_stb_o	= UUT.iCFO_EstComp_ins.STB_O;
+//wire 			iCFO_EstComp_we_o		= UUT.iCFO_EstComp_ins.WE_O;
+//wire 			iCFO_EstComp_ack_o	= UUT.iCFO_EstComp_ins.ACK_O;
 
 // Ch_EstEqu ===============================================================================
 wire [31:0] Ch_EstEqu_datout 	= UUT.Ch_EstEqu_ins.DAT_O;
@@ -222,22 +223,22 @@ integer FreComp_phase_rot_fo;
 integer Synch_datout_cnt, FreComp_datout_cnt, RemoveCP_datout_cnt, FFT_datout_cnt, temp_fo;
 
 initial begin	
-	Synch_datout_Re_fo 			= $fopen("./MATLAB/RTL_OFDM_RX_Synch_datout_Re.txt");	
-	Synch_datout_Im_fo 			= $fopen("./MATLAB/RTL_OFDM_RX_Synch_datout_Im.txt");	
-//	FreComp_datout_Re_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_FreComp_datout_Re.txt");
-//	FreComp_datout_Im_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_FreComp_datout_Im.txt");
-//	FreComp_phase_rot_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_FreComp_phase_rot.txt");	
-	RemoveCP_datout_Re_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_RemoveCP_datout_Re.txt");
-	RemoveCP_datout_Im_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_RemoveCP_datout_Im.txt");
-	FFT_datout_Re_fo 				= $fopen("./MATLAB/RTL_OFDM_RX_FFT_datout_Re.txt");	
-	FFT_datout_Im_fo 				= $fopen("./MATLAB/RTL_OFDM_RX_FFT_datout_Im.txt");	
-	iCFO_EstComp_datout_Re_fo  = $fopen("./MATLAB/RTL_OFDM_RX_iCFO_EstComp_datout_Re.txt");	
-	iCFO_EstComp_datout_Im_fo  = $fopen("./MATLAB/RTL_OFDM_RX_iCFO_EstComp_datout_Im.txt");
-	Ch_EstEqu_datout_Re_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_Ch_EstEqu_datout_Re.txt");	
-	Ch_EstEqu_datout_Im_fo 		= $fopen("./MATLAB/RTL_OFDM_RX_Ch_EstEqu_datout_Im.txt");	
-	PhaseTrack_datout_Re_fo 	= $fopen("./MATLAB/RTL_OFDM_RX_PhaseTrack_datout_Re.txt");	
-	PhaseTrack_datout_Im_fo 	= $fopen("./MATLAB/RTL_OFDM_RX_PhaseTrack_datout_Im.txt");	
-	temp_fo 	= $fopen("./MATLAB/temp.txt");	
+	Synch_datout_Re_fo 			= $fopen("../../../../../data/RTL_OFDM_RX_Synch_datout_Re.txt");	
+	Synch_datout_Im_fo 			= $fopen("../../../../../data/RTL_OFDM_RX_Synch_datout_Im.txt");	
+//	FreComp_datout_Re_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_FreComp_datout_Re.txt");
+//	FreComp_datout_Im_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_FreComp_datout_Im.txt");
+//	FreComp_phase_rot_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_FreComp_phase_rot.txt");	
+	RemoveCP_datout_Re_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_RemoveCP_datout_Re.txt");
+	RemoveCP_datout_Im_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_RemoveCP_datout_Im.txt");
+	FFT_datout_Re_fo 				= $fopen("../../../../../data/RTL_OFDM_RX_FFT_datout_Re.txt");	
+	FFT_datout_Im_fo 				= $fopen("../../../../../data/RTL_OFDM_RX_FFT_datout_Im.txt");	
+	iCFO_EstComp_datout_Re_fo  = $fopen("../../../../../data/RTL_OFDM_RX_iCFO_EstComp_datout_Re.txt");	
+	iCFO_EstComp_datout_Im_fo  = $fopen("../../../../../data/RTL_OFDM_RX_iCFO_EstComp_datout_Im.txt");
+	Ch_EstEqu_datout_Re_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_Ch_EstEqu_datout_Re.txt");	
+	Ch_EstEqu_datout_Im_fo 		= $fopen("../../../../../data/RTL_OFDM_RX_Ch_EstEqu_datout_Im.txt");	
+	PhaseTrack_datout_Re_fo 	= $fopen("../../../../../data/RTL_OFDM_RX_PhaseTrack_datout_Re.txt");	
+	PhaseTrack_datout_Im_fo 	= $fopen("../../../../../data/RTL_OFDM_RX_PhaseTrack_datout_Im.txt");	
+	temp_fo 	= $fopen("../../../../../data/temp.txt");	
 	
 	Synch_datout_cnt 		= 0;
 	FreComp_datout_cnt	= 0;
@@ -268,10 +269,10 @@ initial begin
 			$fwrite(FFT_datout_Im_fo,"%d ", $signed(FFT_datout[31:16]));					
 			FFT_datout_cnt = FFT_datout_cnt+1;				
 		end
-		if (iCFO_EstComp_stb_o) 		begin 
-			$fwrite(iCFO_EstComp_datout_Re_fo,"%d ", $signed(iCFO_EstComp_datout[15:0]));		
-			$fwrite(iCFO_EstComp_datout_Im_fo,"%d ", $signed(iCFO_EstComp_datout[31:16]));					
-		end	
+//		if (iCFO_EstComp_stb_o) 		begin 
+//			$fwrite(iCFO_EstComp_datout_Re_fo,"%d ", $signed(iCFO_EstComp_datout[15:0]));		
+//			$fwrite(iCFO_EstComp_datout_Im_fo,"%d ", $signed(iCFO_EstComp_datout[31:16]));					
+//		end	
 		if (Ch_EstEqu_stb_o & Ch_EstEqu_ack_i) 		begin 
 			$fwrite(Ch_EstEqu_datout_Re_fo,"%d ", $signed(Ch_EstEqu_datout[15:0]));		
 			$fwrite(Ch_EstEqu_datout_Im_fo,"%d ", $signed(Ch_EstEqu_datout[31:16]));								

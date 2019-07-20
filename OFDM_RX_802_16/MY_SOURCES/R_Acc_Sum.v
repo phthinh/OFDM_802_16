@@ -38,6 +38,8 @@ begin
 		ia_d 	<= a_d;
 		end
 end
+wire signed [17:0] delay_sub	= $signed({1'b0,ia}) - $signed({1'b0,ia_d});
+wire signed [22:0] mov_sum = $signed(sum_reg) + $signed({{5{delay_sub[17]}},delay_sub});
 
 reg [22:0] sum_reg;
 always @(posedge clk)
@@ -45,9 +47,6 @@ begin
 	if (rst)			sum_reg <= 23'd0;
 	else if(ena)	sum_reg <= mov_sum;
 end
-
-wire signed [17:0] delay_sub	= $signed({1'b0,ia}) - $signed({1'b0,ia_d});
-wire signed [22:0] mov_sum = $signed(sum_reg) + $signed({{5{delay_sub[17]}},delay_sub});
 
 assign	sum_out = mov_sum;	
 endmodule

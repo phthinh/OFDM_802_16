@@ -10,7 +10,7 @@ CP   = 32;       % cyclic prefix length
 PRE  = 2;        % preamble symbol = 2
 
 % Read data in ============================================================
-Para_fid = fopen('RTL_OFDM_RX_datin_len.txt', 'r');
+Para_fid = fopen('../work/data/RTL_OFDM_RX_datin_len.txt', 'r');
 Para = fscanf(Para_fid, '%d ');
 NLOP = Para(1);
 Flen  = Para(2);
@@ -22,15 +22,15 @@ t_cor = toff + 288+1;
 
 NDS = (Flen-toff)/288 - 2; %number of Data symbol excluding preamble
 
-datin_fid = fopen('OFDM_RX_bit_symbols.txt', 'r');
+datin_fid = fopen('../work/data/OFDM_RX_bit_symbols.txt', 'r');
 bit_symbols_in = fscanf(datin_fid, '%d ');
 fclose(datin_fid);
 
-datin_fid = fopen('OFDM_RX_datin_Re.txt', 'r');
+datin_fid = fopen('../work/data/OFDM_RX_datin_Re.txt', 'r');
 dat_Re = fscanf(datin_fid, '%f ');
 fclose(datin_fid);
 
-datin_fid = fopen('OFDM_RX_datin_Im.txt', 'r');
+datin_fid = fopen('../work/data/OFDM_RX_datin_Im.txt', 'r');
 dat_Im = fscanf(datin_fid, '%f ');
 fclose(datin_fid);
 
@@ -39,7 +39,7 @@ rx_in = rx_in.';
 rx_in = reshape(rx_in, Flen, NLOP);
 
 % Read data out of RTL ====================================================
-datout_fid = fopen('RTL_OFDM_RX_datout.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_datout.txt', 'r');
 OFDM_RX_datout_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 %===== Remove Long Preamble ========== 
@@ -61,10 +61,10 @@ fclose(datout_fid);
 % bit_symbols_rtl(1,:) = [];
 % bit_symbols_rtl = reshape(bit_symbols_rtl,NDS*size(bit_symbols_rtl,1),1);
 
-datout_fid = fopen('RTL_OFDM_RX_Synch_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_Synch_datout_Re.txt', 'r');
 Synch_datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_RX_Synch_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_Synch_datout_Im.txt', 'r');
 Synch_datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 Synch_datout_rtl = (Synch_datout_Re_rtl./2^14) + 1i*(Synch_datout_Im_rtl./2^14);
@@ -83,19 +83,19 @@ Synch_datout_rtl = (Synch_datout_Re_rtl./2^14) + 1i*(Synch_datout_Im_rtl./2^14);
 % fclose(datout_fid);
 % Phase_rot_comp_rtl = FreComp_phase_rot_rtl ./ 2^13;
 
-datout_fid = fopen('RTL_OFDM_RX_RemoveCP_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_RemoveCP_datout_Re.txt', 'r');
 RemoveCP_datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_RX_RemoveCP_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_RemoveCP_datout_Im.txt', 'r');
 RemoveCP_datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 RemoveCP_datout_rtl = (RemoveCP_datout_Re_rtl./2^14) + 1i*(RemoveCP_datout_Im_rtl./2^14);
 
 
-datout_fid = fopen('RTL_OFDM_RX_FFT_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_FFT_datout_Re.txt', 'r');
 FFT_datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_RX_FFT_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_FFT_datout_Im.txt', 'r');
 FFT_datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 FFT_datout_rtl = (FFT_datout_Re_rtl./2^11) + 1i*(FFT_datout_Im_rtl./2^11);
@@ -108,24 +108,24 @@ FFT_datout_rtl = (FFT_datout_Re_rtl./2^11) + 1i*(FFT_datout_Im_rtl./2^11);
 % fclose(datout_fid);
 % iCFO_EstComp_datout_rtl = (iCFO_EstComp_datout_Re_rtl./2^11) + 1i*(iCFO_EstComp_datout_Im_rtl./2^11);
 
-datout_fid = fopen('RTL_OFDM_RX_Ch_EstEqu_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_Ch_EstEqu_datout_Re.txt', 'r');
 Ch_EstEqu_datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_RX_Ch_EstEqu_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_Ch_EstEqu_datout_Im.txt', 'r');
 Ch_EstEqu_datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 Ch_EstEqu_datout_rtl = (Ch_EstEqu_datout_Re_rtl./2^6) + 1i*(Ch_EstEqu_datout_Im_rtl./2^6);
 
-datout_fid = fopen('RTL_OFDM_RX_PhaseTrack_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_PhaseTrack_datout_Re.txt', 'r');
 PhaseTrack_datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_RX_PhaseTrack_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_RX_PhaseTrack_datout_Im.txt', 'r');
 PhaseTrack_datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 PhaseTrack_datout_rtl = (PhaseTrack_datout_Re_rtl./2^0) + 1i*(PhaseTrack_datout_Im_rtl./2^0);
 
 % Simulate with data in ===================================================
-datin_fid = fopen('Synch_known_coeff_rtl.txt', 'r');
+datin_fid = fopen('../work/data/Synch_known_coeff_rtl.txt', 'r');
 known_coeff = fscanf(datin_fid, '%d ');
 fclose(datin_fid);
 known_coeff = [known_coeff; known_coeff]./2;

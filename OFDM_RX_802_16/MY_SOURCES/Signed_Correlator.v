@@ -27,7 +27,7 @@ module Signed_Correlator(
  
  
 reg [1:0] Synch_known_coeff 	 [63:0]; //[1] :signed bit of imaginary part, [0] :signed bit of real part,
-initial $readmemh("./MY_SOURCES/Synch_known_coeff_802_16.txt", Synch_known_coeff);
+initial $readmemh("Synch_known_coeff_802_16.txt", Synch_known_coeff);
 
 
 wire 	[1:0] iCR_in = CR_in;

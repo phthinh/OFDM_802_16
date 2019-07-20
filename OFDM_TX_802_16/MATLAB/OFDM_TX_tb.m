@@ -8,37 +8,37 @@ CP   = 32;       % cyclic prefix length
 PRE  = 2;        % preamble symbol = 2
 % Read data in ============================================================
 
-datin_fid = fopen('OFDM_TX_bit_symbols.txt', 'r');
+datin_fid = fopen('../work/data/OFDM_TX_bit_symbols.txt', 'r');
 bit_symbols = fscanf(datin_fid, '%d ');
 fclose(datin_fid);
 
-datin_fid = fopen('OFDM_TX_bit_symbols_Len.txt', 'r');
+datin_fid = fopen('../work/data/OFDM_TX_bit_symbols_Len.txt', 'r');
 para = fscanf(datin_fid, '%d ');
 Len  = para(1);
 NLOP = para(2);
 MOD  = para(3);
 fclose(datin_fid);
 % Read data out of RTL ====================================================
-datout_fid = fopen('RTL_OFDM_TX_datout_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_datout_Re.txt', 'r');
 Datout_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_TX_datout_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_datout_Im.txt', 'r');
 Datout_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 Datout_rtl = (Datout_Re_rtl./2^15) + 1i*(Datout_Im_rtl./2^15);
 
-datout_fid = fopen('RTL_OFDM_TX_Pilots_Insert_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_Pilots_Insert_Re.txt', 'r');
 Pilots_Insert_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_TX_Pilots_Insert_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_Pilots_Insert_Im.txt', 'r');
 Pilots_Insert_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 Pilots_Insert_rtl = (Pilots_Insert_Re_rtl./2^15) + 1i*(Pilots_Insert_Im_rtl./2^15);
 
-datout_fid = fopen('RTL_OFDM_TX_IFFT_Mod_Re.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_IFFT_Mod_Re.txt', 'r');
 IFFT_Mod_Re_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
-datout_fid = fopen('RTL_OFDM_TX_IFFT_Mod_Im.txt', 'r');
+datout_fid = fopen('../work/data/RTL_OFDM_TX_IFFT_Mod_Im.txt', 'r');
 IFFT_Mod_Im_rtl = fscanf(datout_fid, '%d ');
 fclose(datout_fid);
 IFFT_Mod_rtl = (IFFT_Mod_Re_rtl./2^15) + 1i*(IFFT_Mod_Im_rtl./2^15);
@@ -123,13 +123,13 @@ hold on
 plot(1:length(Pilots_Insert_rtl), real(Pilots_Insert_rtl),'x-r');
 ylim([-3 3]);
 title('comparison of Pilots_Insert output');
-legend('Pilots\_Insertz\sim','Pilots\_Insert\_rtl');
+legend('Pilots\_Insert\_sim','Pilots\_Insert\_rtl');
 
 figure(2);
 plot(1:length(IFFT_Mod_sim), imag(IFFT_Mod_sim),'o-b');
 hold on
 plot(1:length(IFFT_Mod_rtl), imag(IFFT_Mod_rtl),'x-r');
-title('comparison of IFFT_Mod output');
+title('comparison of IFFT\_Mod output');
 legend('IFFT\_Mod\_sim','IFFT\_Mod\_rtl');
 
 figure(3);

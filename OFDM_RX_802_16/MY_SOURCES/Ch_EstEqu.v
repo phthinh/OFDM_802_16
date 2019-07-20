@@ -37,17 +37,16 @@ reg [1:0] lp 	 [0:99]; //[1] :signed bit of imaginary part, [0] :signed bit of r
 //parameter LP_P = 16'h7fff;	// +1 in Q1.15
 //parameter LP_N = 16'h8001;	// -1 in Q1.15 
 //reg [1:0] lp 	 [0:51]; //[1] :signed bit of imaginary part, [0] :signed bit of real part of long preamble,
-initial $readmemh("./MY_SOURCES/ChEstEqu_lpre.txt", lp);
+initial $readmemh("ChEstEqu_lpre.txt", lp);
 reg [31:0]  idat;
 reg 			iena;
 wire 			istart, out_halt, datin_val;
-
+reg 	CYC_I_pp;
 assign 		datin_val = (WE_I) & STB_I & CYC_I;
 assign 		out_halt  =  STB_O  & (~ACK_I);
 assign 		ACK_O     =  datin_val & (~out_halt);
 assign		istart	 =  CYC_I  & (~CYC_I_pp);
 
-reg 	CYC_I_pp;
 always @(posedge CLK_I) begin
 	if(RST_I)	CYC_I_pp <= 1'b1;
 	else  		CYC_I_pp <= CYC_I;
