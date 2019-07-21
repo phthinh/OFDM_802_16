@@ -1,4 +1,4 @@
-# IEEE 802.11 OFDM-based transceiver system
+# IEEE 802.16 OFDM-based transceiver system
 This repos contains the implementation of IEEE 802.16 (i.e. WiMax) OFDM-based transceiver system. This is stored in 3 separate parts, i.e. transmitter (TX), receiver (RX) and transceiver (SYS).
 
 Each part includes implementation files stored in **MY_SOURCES** and **IPCORE**, and simulation golden model stored in **MATLAB**.
